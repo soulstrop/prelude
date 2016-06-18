@@ -1,17 +1,17 @@
-;;; prelude-shell.el --- Emacs Prelude: sh-mode configuration.
+;;; prelude-yaml.el --- Emacs Prelude: YAML programming support.
 ;;
 ;; Copyright © 2011-2016 Bozhidar Batsov
 ;;
-;; Author: Bozhidar Batsov <bozhidar@batsov.com>
-;; URL: https://github.com/bbatsov/prelude
+;; Author: ToBeReplaced
+;; URL: http://batsov.com/prelude
 ;; Version: 1.0.0
-;; Keywords: convenience
+;; Keywords: convenience yaml
 
 ;; This file is not part of GNU Emacs.
 
 ;;; Commentary:
 
-;; Some basic configuration for cc-mode and the modes derived from it.
+;; Prelude configuration for YAML.
 
 ;;; License:
 
@@ -31,21 +31,14 @@
 ;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
+(prelude-require-packages '(yaml-mode))
 
-(require 'sh-script)
+;; yaml-mode doesn't derive from prog-mode, but we can at least enable
+;; whitespace-mode and apply cleanup.
+(add-hook 'yaml-mode-hook 'whitespace-mode)
+(add-hook 'yaml-mode-hook 'subword-mode)
+(add-hook 'yaml-mode-hook
+          (lambda () (add-hook 'before-save-hook 'prelude-cleanup-maybe nil t)))
 
-;; recognize pretzo files as zsh scripts
-(defvar prelude-pretzo-files '("zlogin" "zlogin" "zlogout" "zpretzorc" "zprofile" "zshenv" "zshrc"))
-
-(mapc (lambda (file)
-        (add-to-list 'auto-mode-alist `(,(format "\\%s\\'" file) . sh-mode)))
-      prelude-pretzo-files)
-
-(add-hook 'sh-mode-hook
-          (lambda ()
-            (if (and buffer-file-name
-                     (member (file-name-nondirectory buffer-file-name) prelude-pretzo-files))
-                (sh-set-shell "zsh"))))
-
-(provide 'prelude-shell)
-;;; prelude-shell.el ends here
+(provide 'prelude-yaml)
+;;; prelude-yaml.el ends here
